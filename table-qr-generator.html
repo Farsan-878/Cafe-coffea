@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Café Coffea – NFC & QR Table Card Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-bg-primary: #0d1f17;
+      --color-bg-secondary: #152a1e;
+      --color-bg-card: #1a3226;
+      --color-gold: #c9a84c;
+      --color-gold-border: rgba(201, 168, 76, 0.3);
+      --color-gold-dim: rgba(201, 168, 76, 0.15);
+      --color-cream: #f5efe6;
+      --color-text-secondary: rgba(245, 239, 230, 0.7);
+      --font-heading: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      background: var(--color-bg-primary);
+      color: var(--color-cream);
+      padding: 2rem 1rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 2.4rem;
+      color: var(--color-gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: var(--color-text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .control-panel {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-gold-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--color-gold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 14px;
+      background: #0f2419;
+      border: 1px solid var(--color-gold-border);
+      border-radius: 8px;
+      color: var(--color-cream);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--color-gold);
+      box-shadow: 0 0 0 2px rgba(201,168,76,0.2);
+    }
+
+    .action-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--color-gold), #b8913c);
+      color: #0d1f17;
+    }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(201,168,76,0.3); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--color-gold);
+      border: 1.5px solid var(--color-gold-border);
+    }
+    .btn-outline:hover { background: var(--color-gold-dim); }
+
+    /* Instructions Box */
+    .instructions-box {
+      background: rgba(201,168,76,0.06);
+      border: 1px dashed var(--color-gold-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .instructions-box h3 {
+      font-size: 0.95rem;
+      color: var(--color-gold);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .instructions-box ol {
+      padding-left: 1.4rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* Table Standee / Tent Card */
+    .table-card {
+      background: #11261b;
+      border: 2px solid var(--color-gold);
+      border-radius: 20px;
+      padding: 1.75rem 1.5rem;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      page-break-inside: avoid;
+    }
+
+    .card-brand {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      color: var(--color-cream);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.2rem;
+    }
+
+    .card-brand span { color: var(--color-gold); }
+
+    .card-eyebrow {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--color-gold);
+      margin-bottom: 1rem;
+    }
+
+    .card-table-badge {
+      display: inline-block;
+      background: var(--color-gold);
+      color: #0d1f17;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 4px 18px;
+      border-radius: 999px;
+      margin-bottom: 1.2rem;
+      letter-spacing: 0.05em;
+    }
+
+    .card-qr-wrap {
+      background: #ffffff;
+      padding: 12px;
+      border-radius: 16px;
+      margin-bottom: 1rem;
+      display: inline-block;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .card-qr-img {
+      width: 150px;
+      height: 150px;
+      display: block;
+    }
+
+    .card-instructions {
+      font-size: 0.8rem;
+      color: var(--color-cream);
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+    }
+
+    .card-instructions-ar {
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.75rem;
+      color: var(--color-text-secondary);
+      direction: rtl;
+      margin-bottom: 1rem;
+    }
+
+    .card-url-copy {
+      font-size: 0.7rem;
+      color: var(--color-gold);
+      background: var(--color-gold-dim);
+      border: 1px solid var(--color-gold-border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.15s ease;
+    }
+
+    .card-url-copy:hover {
+      background: var(--color-gold);
+      color: #0d1f17;
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0;
+      }
+      .control-panel, .instructions-box, .btn, .card-url-copy, .header p {
+        display: none !important;
+      }
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+      .table-card {
+        background: #ffffff !important;
+        border: 2px solid #000000 !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+        padding: 15px;
+        border-radius: 10px;
+      }
+      .card-brand { color: #000000 !important; }
+      .card-brand span { color: #8c6d1f !important; }
+      .card-table-badge {
+        background: #000000 !important;
+        color: #ffffff !important;
+      }
+      .card-instructions { color: #000000 !important; }
+      .card-instructions-ar { color: #444444 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1 class="brand-title">Café Coffea</h1>
+    <p class="subtitle">NFC Digital Menu – Table Standee & QR Card Generator</p>
+  </div>
+
+  <div class="control-panel">
+    <div class="form-grid">
+      <div class="form-group" style="grid-column: span 2;">
+        <label for="base-url">Base Menu URL</label>
+        <input type="url" id="base-url" value="https://cafecoffea.in/menu/" placeholder="https://yourdomain.com/menu/" />
+      </div>
+
+      <div class="form-group">
+        <label for="table-start">Start Table #</label>
+        <input type="number" id="table-start" value="1" min="1" max="100" />
+      </div>
+
+      <div class="form-group">
+        <label for="table-count">Number of Tables</label>
+        <input type="number" id="table-count" value="15" min="1" max="100" />
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn btn-gold" onclick="generateCards()">
+        <span>⚡</span> Generate Cards
+      </button>
+      <button class="btn btn-outline" onclick="window.print()">
+        <span>🖨️</span> Print Table Cards
+      </button>
+      <button class="btn btn-outline" onclick="exportNfcList()">
+        <span>📋</span> Copy NFC Payloads List
+      </button>
+    </div>
+  </div>
+
+  <div class="instructions-box">
+    <h3>📱 How to program NFC tags for Café Coffea</h3>
+    <ol>
+      <li>Download the free <strong>NFC Tools</strong> app (iOS App Store or Google Play Store).</li>
+      <li>In the app, choose <strong>Write</strong> &rarr; <strong>Add a record</strong> &rarr; <strong>URL / URI</strong>.</li>
+      <li>Copy the Table URL from any card below (click "Copy NFC Payload") and paste it into the URL field.</li>
+      <li>Tap <strong>Write</strong> and hold your smartphone against the table's NFC sticker or puck (e.g. NTAG213 / NTAG215).</li>
+      <li>Test the tag: tapping with any modern iPhone or Android immediately opens the menu at that exact table!</li>
+    </ol>
+  </div>
+
+  <div class="cards-grid" id="cards-container">
+    <!-- Populated by JS -->
+  </div>
+</div>
+
+<script>
+function getQrUrl(dataUrl) {
+  // Uses reliable high-resolution QR rendering service
+  return `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(dataUrl)}&margin=4`;
+}
+
+function generateCards() {
+  const baseUrlInput = document.getElementById('base-url').value.trim();
+  const startNum = parseInt(document.getElementById('table-start').value, 10) || 1;
+  const count = parseInt(document.getElementById('table-count').value, 10) || 10;
+
+  // Clean trailing slash
+  let base = baseUrlInput.endsWith('/') ? baseUrlInput : baseUrlInput + '/';
+
+  const container = document.getElementById('cards-container');
+  container.innerHTML = '';
+
+  for (let i = startNum; i < startNum + count; i++) {
+    const tableUrl = `${base}?table=${i}`;
+    const qrSrc = getQrUrl(tableUrl);
+
+    const card = document.createElement('div');
+    card.className = 'table-card';
+    card.innerHTML = `
+      <div class="card-brand">Café <span>Coffea</span></div>
+      <div class="card-eyebrow">Kottakkal, Kerala</div>
+      <div class="card-table-badge">Table ${i}</div>
+      <div class="card-qr-wrap">
+        <img class="card-qr-img" src="${qrSrc}" alt="QR code for Table ${i}" loading="lazy" />
+      </div>
+      <div class="card-instructions">Tap phone on NFC or scan QR</div>
+      <div class="card-instructions-ar">المس بهاتفك على NFC أو امسح الرمز</div>
+      <button class="card-url-copy" onclick="copyToClipboard('${tableUrl}', this)">
+        📋 Copy NFC Payload: Table ${i}
+      </button>
+    `;
+    container.appendChild(card);
+  }
+}
+
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const oldText = btn.textContent;
+    btn.textContent = '✅ Copied to Clipboard!';
+    setTimeout(() => { btn.textContent = oldText; }, 2000);
+  });
+}
+
+function exportNfcList() {
+  const baseUrlInput = document.getElementById('base-url').value.trim();
+  const startNum = parseInt(document.getElementById('table-start').value, 10) || 1;
+  const count = parseInt(document.getElementById('table-count').value, 10) || 10;
+  let base = baseUrlInput.endsWith('/') ? baseUrlInput : baseUrlInput + '/';
+
+  let list = [];
+  for (let i = startNum; i < startNum + count; i++) {
+    list.push(`Table ${i}: ${base}?table=${i}`);
+  }
+
+  navigator.clipboard.writeText(list.join('\n')).then(() => {
+    alert(`Copied ${count} table URLs to clipboard! You can paste them into a spreadsheet or notes.`);
+  });
+}
+
+// Auto-detect current host if running locally
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file')) {
+    const path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+    document.getElementById('base-url').value = window.location.origin + path;
+  }
+  generateCards();
+});
+</script>
+
+</body>
+</html>
+
