@@ -59,8 +59,8 @@ const SITE_CONFIG = {
   addressAr: "كوتاكال، ملابورام، كيرالا",
 
   // Opening Hours
-  openingHours: "12:00 AM - 1:00 AM",
-  openingHoursAr: "١٢:٠٠ ص - ١:٠٠ ص",
+  openingHours: "11:00 AM - 12:00 AM",
+  openingHoursAr: "١١:٠٠ ص - ١٢:٠٠ ص",
   openingDays: "Open Daily",
   openingDaysAr: "مفتوح يومياً"
 };
